@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'Space Grotesk', monospace;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-slate-950 text-white font-sans antialiased;
+}
+
+/* 1. THE VOID KILLER - Noise Texture */
+.bg-noise {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+  opacity: 0.4;
+}
+
+/* 2. BUTTON JUICE - Shine Animation */
+@keyframes shine {
+  100% { transform: translateX(100%); }
+}
+
+.animate-shine {
+  animation: shine 1.5s infinite;
+}
+
+/* 3. SCANNER ANIMATIONS (Keep these from Phase 2) */
+@keyframes scan-line {
+  0% { top: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  50% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.8); opacity: 0.5; }
+}
+
+@keyframes flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-scan {
+  animation: scan-line 2s linear infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-ring 3s ease-in-out infinite;
+}
+
+.animate-flash {
+  animation: flash 1s step-end infinite;
+}
+
+/* Custom Utilities */
+.hud-text {
+  font-family: 'Space Grotesk', monospace;
+  letter-spacing: 0.05em;
+}
+
+.hud-corner {
+  position: absolute;
+  width: 2rem;
+  height: 2rem;
+  border-color: rgba(14, 165, 233, 0.6);
+  border-style: solid;
+  transition: all 0.3s ease;
+}
+
+.hud-corner-tl { border-width: 2px 0 0 2px; top: 1rem; left: 1rem; }
+.hud-corner-tr { border-width: 2px 2px 0 0; top: 1rem; right: 1rem; }
+.hud-corner-bl { border-width: 0 0 2px 2px; bottom: 1rem; left: 1rem; }
+.hud-corner-br { border-width: 0 2px 2px 0; bottom: 1rem; right: 1rem; }

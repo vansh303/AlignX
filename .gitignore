@@ -1,0 +1,14 @@
+# Backend
+alignx-backend/.env
+alignx-backend/venv/
+alignx-backend/__pycache__/
+alignx-backend/.pytest_cache/
+
+# Frontend
+alignx-frontend/.env
+alignx-frontend/node_modules/
+alignx-frontend/dist/
+
+# Common
+.vscode/
+*.log
