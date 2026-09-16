@@ -1,56 +1,80 @@
-import React, { useState, useEffect } from 'react';
-import { CameraOff, Scan, Activity } from 'lucide-react';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useAlignX } from "../context/AlignXContext";
+import { ShieldCheck, Scan, ArrowRight, Activity, CheckCircle2, Zap, Sparkles } from "lucide-react";
+import LiquidMetalBg from "../components/ui/LiquidMetalBg";
 
-export default function PerformAssessment() {
-  const [error, setError] = useState(false);
-  const [retry, setRetry] = useState(0);
-  const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api/v1";
-  const streamUrl = `${API_BASE}/stream/video_feed?t=${retry}`;
-
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        setError(false);
-        setRetry(prev => prev + 1);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [error]);
+export default function Assessment() {
+  const navigate = useNavigate();
+  const { assessmentDatabase } = useAlignX();
 
   return (
-    <div className="min-h-screen pt-28 bg-slate-950 text-white p-8">
-      <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-8">
+    <div className="min-h-screen pt-28 pb-16 px-4 md:px-6 bg-slate-950 text-white relative selection:bg-cyan-500 selection:text-black">
+      <LiquidMetalBg className="fixed inset-0 pointer-events-none opacity-15 z-0" />
+
+      <div className="max-w-7xl mx-auto relative z-10 space-y-8">
         
-        {/* LIVE SENSOR FEED */}
-        <div className="bg-slate-900 rounded-3xl border border-white/10 overflow-hidden relative aspect-video shadow-2xl">
-          {!error ? (
-            <img 
-              src={streamUrl} 
-              alt="Live Feed"
-              className="w-full h-full object-cover"
-              onError={() => setError(true)} // Connection fail logic
-            />
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full text-center p-6">
-              <Activity className="text-cyan-500 animate-spin mb-4" size={40} />
-              <p className="text-cyan-400 font-bold uppercase tracking-widest text-sm">RECONNECTING TO SENSORS...</p>
-              <p className="text-[10px] text-slate-500 mt-2 italic">Ensure Python main.py is running on Port 8000</p>
-            </div>
-          )}
+        {/* Header */}
+        <div className="text-center max-w-3xl mx-auto space-y-4">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-bold uppercase tracking-widest">
+            <Zap size={14} /> AI DIAGNOSTIC SUITE
+          </div>
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+            Clinical AI <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-emerald-400">Posture Screening</span>
+          </h1>
+          <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+            Select a specialized computer vision screening protocol below to launch real-time 33-landmark biomechanical tracking.
+          </p>
         </div>
 
-        {/* DIAGNOSTIC PANEL */}
-        <div className="bg-slate-900/50 p-8 rounded-3xl border border-white/10 backdrop-blur-md">
-           <h2 className="text-2xl font-bold mb-4 flex items-center gap-3">
-             <Scan className="text-emerald-400" /> AI Diagnostic Status
-           </h2>
-           <div className="p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl mb-6">
-             <p className="text-emerald-400 text-xs font-bold uppercase">System Message</p>
-             <p className="text-sm text-slate-300">Position your full body in frame for skeletal analysis.</p>
-           </div>
-           <button className="w-full py-4 bg-emerald-500 text-black font-black rounded-xl hover:bg-emerald-400 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-             RUN FULL SCAN
-           </button>
+        {/* Assessment Catalog Grid */}
+        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto pt-4">
+          {(assessmentDatabase || []).map((assessment) => (
+            <div
+              key={assessment.id}
+              className="bg-slate-900/70 border border-white/10 rounded-3xl p-6 md:p-8 backdrop-blur-2xl shadow-2xl flex flex-col justify-between hover:border-cyan-500/40 transition-all duration-300 group relative overflow-hidden"
+            >
+              <div className="space-y-4 relative z-10">
+                <div className="flex justify-between items-start">
+                  <div className="p-3 bg-cyan-500/10 text-cyan-400 rounded-2xl border border-cyan-500/30 group-hover:scale-110 transition-transform">
+                    <Scan size={28} />
+                  </div>
+                  <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 text-[10px] font-mono font-bold uppercase rounded-full border border-emerald-500/30">
+                    REALTIME SCAN
+                  </span>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-bold text-white tracking-tight group-hover:text-cyan-300 transition-colors">
+                    {assessment.name}
+                  </h3>
+                  <p className="text-slate-400 text-xs mt-2 leading-relaxed">
+                    {assessment.description}
+                  </p>
+                </div>
+
+                <div className="space-y-2 pt-2">
+                  <p className="text-[10px] font-mono text-slate-500 uppercase font-bold tracking-wider">Protocol Requirements:</p>
+                  {assessment.instructions.slice(0, 3).map((step, idx) => (
+                    <div key={idx} className="flex items-start gap-2 text-xs text-slate-300">
+                      <CheckCircle2 size={14} className="text-cyan-400 shrink-0 mt-0.5" />
+                      <span className="line-clamp-1">{step}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-6 mt-6 border-t border-white/10 relative z-10">
+                <button
+                  onClick={() => navigate(`/perform-assessment/${assessment.id}`)}
+                  className="w-full py-3.5 px-6 bg-gradient-to-r from-cyan-500 to-emerald-500 text-slate-950 font-extrabold rounded-2xl text-sm flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_35px_rgba(6,182,212,0.5)] transition-all cursor-pointer"
+                >
+                  <span>Launch Diagnostic Scan</span>
+                  <ArrowRight size={16} />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
 
       </div>
